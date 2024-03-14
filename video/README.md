@@ -1,7 +1,7 @@
 ## DiffuseHigh video generation
 
 # Environment
-### Python==3.10   
+### Python3.10   
 ### Packages:
 * torch==2.2.1   
 * diffuesrs==0.26.3
