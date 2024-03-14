@@ -1,5 +1,10 @@
 ## DiffuseHigh video generation
 
+# Environment
+python==3.10
+torch==2.2.1
+diffuesrs==0.26.3
+
 # Environment Setting
 ```Shell
 pip install -r requirements.txt
