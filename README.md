@@ -1,2 +1,0 @@
-## DiffuseHigh image generation
-
