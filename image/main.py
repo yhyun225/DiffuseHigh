@@ -51,7 +51,7 @@ def main():
         prompt=args.prompt,
     )[0]
 
-    image.save(os.path.join(args.log_dir), "sample.png")
+    image.save(os.path.join(args.log_dir, "sample.png"))
 
 if __name__ == "__main__":
     main()

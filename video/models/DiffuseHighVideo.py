@@ -289,6 +289,7 @@ class TextToVideoDiffusion(object):
                 export_to_video(video[0], 
                                 output_video_path=os.path.join(self.cfg.save_path, f'{prompt}_seed_{seed}_{tar_h}_startstep_{start}_dwt.mp4'), 
                                 fps=7)
+                return
         
         with torch.no_grad():    
             video_tensor = self.pipeline.decode_latents(latents)

@@ -18,7 +18,7 @@ def main():
     prompt = args.prompt
     
     model = TextToVideoDiffusion(config)
-    frames = model.Sample_HR_Video_progress(prompt=prompt)[0]
+    model.Sample_HR_Video_progress(prompt=prompt)[0]
 
 
 if __name__ == "__main__":
