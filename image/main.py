@@ -48,7 +48,7 @@ def main():
     os.makedirs(os.path.join(args.log_dir), exist_ok=True)
 
     image = pipeline.sample_HR(
-        prompt=args.prompt,
+        prompt=args.prompt
     )[0]
 
     image.save(os.path.join(args.log_dir, "sample.png"))

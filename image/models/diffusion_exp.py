@@ -129,7 +129,7 @@ class DiffuseHigh(object):
         
         return pred_original_sample
     
-    def obtain_clean_images(
+    def obtain_clean_latents(
         self,
         noisy_latents,
         text_embeddings,
@@ -169,11 +169,11 @@ class DiffuseHigh(object):
         interp_images = F.interpolate(
             low_res_images, (target_height, target_width), mode="bilinear", align_corners=False,
         )
+        latents = self.encode_images(interp_images)
 
         with torch.no_grad():
-            LL, _ = self.dwt(interp_images.to(torch.float32))
+            LL, _ = self.dwt(latents.to(torch.float32))
 
-            latents = self.encode_images(interp_images)
             noise = torch.randn_like(latents)
             t = timesteps[0]
 
@@ -195,13 +195,13 @@ class DiffuseHigh(object):
                 # apply DWT and switch low-frequency components
                 if i < dwt_steps:
                     pred_clean_latents = self.pred_original_samples(noise_pred, t, latents)
-                    pred_clean_images = self.decode_latents(pred_clean_latents)
 
-                    ll, HH = self.dwt(pred_clean_images.to(torch.float32))
+                    # apply low res structural guidance
+                    ll, HH = self.dwt(pred_clean_latents.to(torch.float32))
                     coeffs = (LL, HH)
+                    pred_clean_latents = self.idwt(coeffs).to(torch.float16)
 
-                    pred_clean_images = self.idwt(coeffs)
-                    pred_clean_latents = self.encode_images(pred_clean_images.to(self.weights_dtype))
+                    # LL = ll
                     
                     noise = torch.randn_like(pred_clean_latents)
                     prev_t = t - self.scheduler.config.num_train_timesteps // self.scheduler.num_inference_steps
@@ -211,7 +211,7 @@ class DiffuseHigh(object):
 
         return latents
 
-
+    @torch.no_grad()
     def sample_HR(
         self,
         prompt,
@@ -220,61 +220,62 @@ class DiffuseHigh(object):
         height=None,
         width=None,
     ):
-        with torch.no_grad():
-            height = height or self.unet.config.sample_size * self.vae_scale_factor
-            width = width or self.unet.config.sample_size * self.vae_scale_factor
+        height = height or self.unet.config.sample_size * self.vae_scale_factor
+        width = width or self.unet.config.sample_size * self.vae_scale_factor
 
-            if isinstance(prompt, str):
-                batch_size = 1
-            elif isinstance(prompt, list):
-                batch_size = len(prompt)
-            else:
-                raise NotImplementedError
+        if isinstance(prompt, str):
+            batch_size = 1
+        elif isinstance(prompt, list):
+            batch_size = len(prompt)
+        else:
+            raise NotImplementedError
         
-            (
-                prompt_embeds, 
-                negative_prompt_embeds
-            ) = self.encode_prompt(
-                prompt,
-                device=self.device,
-                num_images_per_prompt=1,
-                do_classifier_free_guidance=True,
-                negative_prompt=negative_prompt,
+        logger.info(f"Prompt: {prompt}")
+    
+        (
+            prompt_embeds, 
+            negative_prompt_embeds
+        ) = self.encode_prompt(
+            prompt,
+            device=self.device,
+            num_images_per_prompt=1,
+            do_classifier_free_guidance=True,
+            negative_prompt=negative_prompt,
+        )
+        prompt_embeds = torch.cat([negative_prompt_embeds, prompt_embeds])
+
+        b, c = batch_size, self.unet.config.in_channels
+        h, w = height // self.vae_scale_factor, width // self.vae_scale_factor
+        noisy_latents = torch.randn((b, c, h, w), dtype=self.weights_dtype)
+
+        latents = self.obtain_clean_latents(noisy_latents, prompt_embeds)
+
+        self.scheduler.set_timesteps(self.cfg.diffusion_steps)
+        hr_timesteps = self.scheduler.timesteps[-self.cfg.noising_steps: ]
+
+        target_height = self.cfg.target_height
+        target_width = self.cfg.target_width
+
+        assert type(target_height) == type(target_width), "type of the target height and width should be the same"
+        if type(target_height) == int:
+            target_height = [target_height]
+            target_width = [target_width]
+        
+        dwt_steps = self.dwt_cfg.steps
+        if type(dwt_steps) == int:
+            dwt_steps = [dwt_steps] * len(target_height)
+
+        for h, w, d in zip(target_height, target_width, dwt_steps):
+            latents = self.denoising_with_dwt(
+                latents,
+                prompt_embeds,
+                hr_timesteps,
+                target_height=h,
+                target_width=w,
+                dwt_steps=d,
             )
-            prompt_embeds = torch.cat([negative_prompt_embeds, prompt_embeds])
 
-            b, c = batch_size, self.unet.config.in_channels
-            h, w = height // self.vae_scale_factor, width // self.vae_scale_factor
-            noisy_latents = torch.randn((b, c, h, w), dtype=self.weights_dtype)
-
-            latents = self.obtain_clean_images(noisy_latents, prompt_embeds)
-
-            self.scheduler.set_timesteps(self.cfg.diffusion_steps)
-            hr_timesteps = self.scheduler.timesteps[-self.cfg.noising_steps: ]
-
-            target_height = self.cfg.target_height
-            target_width = self.cfg.target_width
-
-            assert type(target_height) == type(target_width), "type of the target height and width should be the same"
-            if type(target_height) == int:
-                target_height = [target_height]
-                target_width = [target_width]
-            
-            dwt_steps = self.dwt_cfg.steps
-            if type(dwt_steps) == int:
-                dwt_steps = [dwt_steps] * len(target_height)
-
-            for h, w, d in zip(target_height, target_width, dwt_steps):
-                latents = self.denoising_with_dwt(
-                    latents,
-                    prompt_embeds,
-                    hr_timesteps,
-                    target_height=h,
-                    target_width=w,
-                    dwt_steps=d,
-                )
-
-            images = self.vae.decode(latents / self.vae.config.scaling_factor, return_dict=False)[0]
-            images = self.image_processor.postprocess(images, output_type="pil")
+        images = self.vae.decode(latents / self.vae.config.scaling_factor, return_dict=False)[0]
+        images = self.image_processor.postprocess(images, output_type="pil")
         
         return images
