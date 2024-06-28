@@ -5,8 +5,8 @@ diffusion:
   pretrained_model_name_or_path: "stabilityai/stable-diffusion-2-1-base"
   guidance_scale: 7.5
   diffusion_steps: 50
-  target_height: [1024, 2048]
-  target_width: [1024, 2048]
+  target_height: [1024, 1536, 2048]
+  target_width: [1024, 1536, 2048]
 
   noising_steps: 15
   freeu: False
