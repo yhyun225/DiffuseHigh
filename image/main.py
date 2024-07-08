@@ -10,22 +10,22 @@ from utils.utils import set_seeds
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--seed", type=int, default=0, help="fix seed",
+        "--seed", type=int, default=0, help="Fix seed.",
     )
     parser.add_argument(
-        "--log_dir", type=str, default="log", help="directory for the generated images to be saved.",
+        "--log_dir", type=str, default="log", help="Directory for the generated images to be saved.",
     )
     parser.add_argument(
-        "--config", type=str, default="configs/sdxl_4096x4096.yaml", help="path of the configuration file.",
+        "--config", type=str, default="configs/sdxl_4096x4096.yaml", help="Path of the configuration file.",
     )
     parser.add_argument(
         "--use_amp", type=bool, default=True, help="Use mixed precision.",
     )
     parser.add_argument(
-        "--logger_level", type=str, default="info", choices=["debug", "info", "warn", "error", "fatal"],help="level of logger",
+        "--logger_level", type=str, default="info", choices=["debug", "info", "warn", "error", "fatal"],help="level of the logger.",
     )
     parser.add_argument(
-        "--prompt", type=str, default="a baby bunny sitting on a stack of pancakes", help="Text prompt for image generation",
+        "--prompt", type=str, default="a baby bunny sitting on a stack of pancakes", help="Text prompt for image generation.",
     )
     args = parser.parse_args()
 

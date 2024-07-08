@@ -288,15 +288,28 @@ class DiffuseHighXL(object):
             self.scheduler.set_timesteps(self.cfg.diffusion_steps)
             hr_timesteps = self.scheduler.timesteps[-self.cfg.noising_steps: ]
 
-            latents = self.denoising_with_dwt(
-                latents,
-                prompt_embeds,
-                hr_timesteps,
-                target_height=self.cfg.target_height,
-                target_width=self.cfg.target_width,
-                added_cond_kwargs=added_cond_kwargs,
-                dwt_steps=self.dwt_cfg.steps,
-            )
+            target_height = self.cfg.target_height
+            target_width = self.cfg.target_width
+
+            assert type(target_height) == type(target_width), "type of the target height and width should be the same"
+            if type(target_height) == int:
+                target_height = [target_height]
+                target_width = [target_width]
+            
+            dwt_steps = self.dwt_cfg.steps
+            if type(dwt_steps) == int:
+                dwt_steps = [dwt_steps] * len(target_height)
+
+            for h, w, d in zip(target_height, target_width, dwt_steps):
+                latents = self.denoising_with_dwt(
+                    latents,
+                    prompt_embeds,
+                    hr_timesteps,
+                    target_height=h,
+                    target_width=w,
+                    added_cond_kwargs=added_cond_kwargs,
+                    dwt_steps=d,
+                )
 
             images = self.vae.decode(latents / self.vae.config.scaling_factor, return_dict=False)[0]
             images = self.image_processor.postprocess(images, output_type="pil")
