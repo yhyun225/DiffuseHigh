@@ -448,8 +448,8 @@ class DiffuseHighSDXLPipeline(StableDiffusionXLPipeline):
         Examples:
 
         Returns:
-            [`~pipelines.stable_diffusion_xl.StableDiffusionXLPipelineOutput`] or `tuple`:
-            [`~pipelines.stable_diffusion_xl.StableDiffusionXLPipelineOutput`] if `return_dict` is True, otherwise a
+            [`DiffuseHighSDXLPipelineOutput`] or `tuple`:
+            [`DiffuseHighSDXLPipelineOutput`] if `return_dict` is True, otherwise a
             `tuple`. When returning a tuple, the first element is a list with the generated images.
         """
         # 0. Default height and width to unet
@@ -678,10 +678,10 @@ class DiffuseHighSDXLPipeline(StableDiffusionXLPipeline):
             self.DWT = DWTForward(J=dwt_level, wave=dwt_wave, mode=dwt_mode).to(self.device)
             self.iDWT = DWTInverse(wave=dwt_wave, mode=dwt_mode).to(self.device)
 
-        # 11. Prepare for the progressive DiffuseHigh pipeline
+        # 11. Prepare progressive DiffuseHigh pipeline
         self.scheduler.set_timesteps(num_inference_steps)
         diffusehigh_timesteps = self.scheduler.timesteps[-noising_steps:]
-        self.enable_vae_tiling() # Vae Tiling mode for prevention of OOM issue
+        self.enable_vae_tiling() # Vae tiling mode in order to prevent OOM issues
 
         if isinstance(target_width, int):
             target_width = [target_width]
@@ -708,7 +708,7 @@ class DiffuseHighSDXLPipeline(StableDiffusionXLPipeline):
             if enable_dwt:
                 LL, _ = self.DWT(guidance_image)
             
-            # obtain latent of the interpolated image and noise%
+            # obtain latent of the interpolated image and noise it
             latents = self._encode_vae_image(guidance_image)
             noise = randn_tensor(latents.shape, generator, device=latents.device, dtype=latents.dtype)
             latents = self.scheduler.add_noise(latents, noise, diffusehigh_timesteps[None, 0])
