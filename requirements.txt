@@ -1,0 +1,5 @@
+diffusers==0.24.0
+accelerate
+transformers
+pywavelets
+pytorch-wavelets
