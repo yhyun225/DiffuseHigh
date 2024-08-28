@@ -83,4 +83,4 @@ image.save("sample.png")
 
 result:
 
-<img src="figures/sample_icecream.png">
+<img src="figures/sample_icecream.jpg">
