@@ -45,6 +45,10 @@ pip install -r requirements.txt
 ## Run DiffuseHigh!
 
 ### HyperParameters
+- `target_height` (type: `List[int]` or `int`, default: `[2048, 3072, 4096]`): The height of the image being generated. If list is given, the pipeline generates corresponding intermediate resolution images in a progressive manner.
+- `target_width` (type: `List[int]` or `int`, default: `[2048, 3072, 4096]`): The width of the image being generated. If list is given, the pipeline generates corresponding intermediate resolution images in a progressive manner.
+- `guidance_image` (type: `torch.FloatTensor` or `PIL.Image.Image` or `np.ndarray`, default: `None`): If the guidance image is given, *DiffuseHigh* pipeline obtains structure properties from the given image, and generates desired high-resolution image.
+- `noising_steps` (type: `int`, default: `15`): The number of noising steps being used in *DiffuseHigh* pipeline.
 - `enable_dwt` (type: `bool`, default: `True`): Whether to use DWT-based structural guidance.
 - `dwt_steps` (type: `int`, default: `5`): The number of structural guidance steps during the denoising process. Typically, we found that 5 ~ 7 steps works well.
 - `dwt_level` (type: `int`, default: `1`): The DWT level of our proposed structural guidance.
