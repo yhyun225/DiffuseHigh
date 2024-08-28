@@ -88,6 +88,8 @@ image.save("sample_bunny_2K.png")
 result:
 <img src="figures/sample_bunny_2K.png">
 
+
+For 4K image generation, try below code!
 ```Python
 from pipeline_diffusehigh_sdxl import DiffuseHighSDXLPipeline
 pipeline = DiffuseHighSDXLPipeline.from_pretrained(
@@ -113,3 +115,5 @@ image.save("sample_icecream.png")
 
 result:
 <img src="figures/sample_icecream_4K.png">
+
+If the result image has undesirable structural properties, you can adjust `dwt_steps` argument to little more higher value, e.g., `dwt_steps=7`. If the result image still seems blurry, try higher `sharpness_factor` argument value, e.g., `sharpness_factor=2.0`.
