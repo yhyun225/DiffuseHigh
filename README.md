@@ -82,9 +82,9 @@ image = model(
         sharpness_factor=1.0,
     ).images[0]
 
-image.save("sample.png")
+image.save("sample_icecream.png")
 ```
 
 result:
 
-<img src="figures/sample_icecream.jpg">
+<img src="figures/sample_icecream.png">

@@ -436,6 +436,14 @@ class DiffuseHighSDXLPipeline(StableDiffusionXLPipeline):
                 The list of tensor inputs for the `callback_on_step_end` function. The tensors specified in the list
                 will be passed as `callback_kwargs` argument. You will only be able to include variables listed in the
                 `._callback_tensor_inputs` attribute of your pipeline class.
+            target_height ('List[int]' or int):
+                The height of the image being generated. If list is given, the pipeline generates corresponding intermediate
+                resolution images in a progressive manner.
+            target_width ('List[int]' or int):
+                The width of the image being generated. If list is given, the pipeline generates corresponding intermediate
+                resolution images in a progressive manner.
+                
+            
 
         Examples:
 
