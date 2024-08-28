@@ -110,7 +110,7 @@ image = model(
         sharpness_factor=1.0,
     ).images[0]
 
-image.save("sample_icecream.png")
+image.save("sample_icecream_4K.png")
 ```
 
 result:
