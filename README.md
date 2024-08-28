@@ -7,7 +7,7 @@ Official github for "DiffuseHigh: Training-free Progressive High-Resolution Imag
 
 <img src="figures/main_figure.jpg">
 
-## 📣 News
+## 🚨 News
 - **2024.08.28**: *DiffuseHigh* code release!
 
 ## 🗓️ To Do List
