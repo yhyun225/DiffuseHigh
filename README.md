@@ -7,18 +7,18 @@ Official github for "DiffuseHigh: Training-free Progressive High-Resolution Imag
 
 <img src="figures/main_figure.jpg">
 
-## News
+## 📣 News
 - **2024.08.28**: *DiffuseHigh* code release!
 
-## To Do List
+## 🗓️ To Do List
 - [x] Code release for DiffuseHigh
 - [ ] DiffuseHigh + ControlNet
 - [ ] DiffuseHigh + SVD
 
-## Abstract
+## ✏️ Abstract
 Large-scale generative models, such as text-to-image diffusion models, have garnered widespread attention across diverse domains due to their creative and high-fidelity image generation. Nonetheless, existing large-scale diffusion models are confined to generating images of up to 1K resolution, which is far from meeting the demands of contemporary commercial applications. Directly sampling higher-resolution images often yields results marred by artifacts such as object repetition and distorted shapes. Addressing the aforementioned issues typically necessitates training or fine-tuning models on higher-resolution datasets. However, this poses a formidable challenge due to the difficulty in collecting large-scale high-resolution images and substantial computational resources. While several preceding works have proposed alternatives to bypass the cumbersome training process, they often fail to produce convincing results. In this work, we probe the generative ability of diffusion models at higher resolution beyond their original capability and propose a novel progressive approach that fully utilizes generated low-resolution images to guide the generation of higher-resolution images. Our method obviates the need for additional training or fine-tuning which significantly lowers the burden of computational costs. Extensive experiments and results validate the efficiency and efficacy of our method.
 
-## Dependency Setup
+## ⚙️ Dependency Setup
 Create the conda environment with below commands.
 Our code is implemented based on torch + diffusers.
 You should first check your cuda compiler version, and install the compatible version of pytorch.
