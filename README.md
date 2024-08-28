@@ -44,7 +44,7 @@ or via following command:
 pip install -r requirements.txt
 ```
 
-## Run DiffuseHigh!
+## 🔥 Run DiffuseHigh!
 
 ### HyperParameters
 - `target_height` (type: `List[int]` or `int`, default: `[2048, 3072, 4096]`): The height of the image being generated. If list is given, the pipeline generates corresponding intermediate resolution images in a progressive manner.
