@@ -62,6 +62,32 @@ pip install -r requirements.txt
 ### How to use
 You can easily import the DiffuseHighSDXLPipeline from our provided code below.
 
+For example, you can generate 2K image via below code.
+```Python
+from pipeline_diffusehigh_sdxl import DiffuseHighSDXLPipeline
+pipeline = DiffuseHighSDXLPipeline.from_pretrained(
+        "stabilityai/stable-diffusion-xl-base-1.0", torch_dtype=torch.float16,
+).to("cuda")
+
+negative_prompt = "blurry, ugly, duplicate, poorly drawn, deformed, mosaic"
+prompt = "A baby bunny sitting on a stack of pancakes."
+
+image = model(
+        prompt,
+        negative_prompt=negative_prompt,
+        target_height=[1536, 2048],
+        target_width=[1536, 2048],
+        enable_dwt=True,
+        dwt_steps=5,
+        enable_sharpening=True,
+        sharpness_factor=1.0,
+    ).images[0]
+
+image.save("sample_bunny_2K.png")
+```
+result:
+<img src="figures/sample_bunny_2K.png">
+
 ```Python
 from pipeline_diffusehigh_sdxl import DiffuseHighSDXLPipeline
 pipeline = DiffuseHighSDXLPipeline.from_pretrained(
@@ -86,5 +112,4 @@ image.save("sample_icecream.png")
 ```
 
 result:
-
-<img src="figures/sample_icecream.png">
+<img src="figures/sample_icecream_4K.png">
