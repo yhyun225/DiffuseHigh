@@ -1,3 +1,21 @@
+[![Project Page](https://img.shields.io/badge/Project-Page-green.svg)](https://yhyun225.github.io/DiffuseHigh/)
+[![arXiv](https://img.shields.io/badge/arXiv-2311.16973-b31b1b.svg)](https://arxiv.org/abs/2406.18459)
+
+Official github for "DiffuseHigh: Training-free Progressive High-Resolution Image Synthesis through Structure Guidance"
+
+<img src="figures/main_figure.jpg">
+
+## News
+- **2024.08.28**: *DiffuseHigh* code release!
+
+## To Do List
+- [o] Code release for DiffuseHigh
+- [x] DiffuseHigh + ControlNet
+- [x] DiffuseHigh + SDXL
+
+## Abstract
+Large-scale generative models, such as text-to-image diffusion models, have garnered widespread attention across diverse domains due to their creative and high-fidelity image generation. Nonetheless, existing large-scale diffusion models are confined to generating images of up to 1K resolution, which is far from meeting the demands of contemporary commercial applications. Directly sampling higher-resolution images often yields results marred by artifacts such as object repetition and distorted shapes. Addressing the aforementioned issues typically necessitates training or fine-tuning models on higher-resolution datasets. However, this poses a formidable challenge due to the difficulty in collecting large-scale high-resolution images and substantial computational resources. While several preceding works have proposed alternatives to bypass the cumbersome training process, they often fail to produce convincing results. In this work, we probe the generative ability of diffusion models at higher resolution beyond their original capability and propose a novel progressive approach that fully utilizes generated low-resolution images to guide the generation of higher-resolution images. Our method obviates the need for additional training or fine-tuning which significantly lowers the burden of computational costs. Extensive experiments and results validate the efficiency and efficacy of our method.
+
 ## Dependency Setup
 Create the conda environment with below commands.
 Our code is implemented based on torch + diffusers.
@@ -11,20 +29,35 @@ conda activate diffusehigh
 pip install torch==2.1.1 torchvision==0.16.1 torchaudio==2.1.1 xformers --index-url https://download.pytorch.org/whl/cu121
 ```
 
-Please install below pacakges in your environment.
-We leave our settings below:
+Please install below pacakges in your environment:
 
-- diffusers==0.24.0
+- diffusers >= 0.24.0
 - accelerate
 - transformers
 - pywavelets
 - pytorch-wavelets
 
+or via following command:
+```
+pip install -r requirements.txt
+```
 
 ## Run DiffuseHigh!
+
+### HyperParameters
+- `enable_dwt` (type: `bool`, default: `True`): Whether to use DWT-based structural guidance.
+- `dwt_steps` (type: `int`, default: `5`): The number of structural guidance steps during the denoising process. Typically, we found that 5 ~ 7 steps works well.
+- `dwt_level` (type: `int`, default: `1`): The DWT level of our proposed structural guidance.
+- `dwt_wave` (type: `str`, default: `'db4'`): Which wavelet to use for the DWT.
+- `dwt_mode` (type: `str`, default: `'symmetric'`): Padding scheme for the DWT.
+- `enable_sharpening` (type: `bool`, default: `True`): Whether to use sharpening operation in *DiffuseHigh* pipeline.
+- `sharpening_kernel_size` (type: `int`, default: `3`): Kernel size for the Gaussian blur involved in sharpening operation.
+- `sharpening_simga` (type: `tuple` or `float`, default: `(0.1, 2.0)`): Standard deviation to be used for creating kernel to perform blurring. If float, sigma is fixed. If it is tuple of float (min, max), sigma is chosen uniformly at random to lie in the given range.
+- `sharpening_alpha` (type: `float`, default: `1.0`): The sharpeness factor for controling the strength of the sharpening operation.
+
+### How to use
 You can easily import the DiffuseHighSDXLPipeline from our provided code below.
 
-example code for generating 4K image.
 ```Python
 from pipeline_diffusehigh_sdxl import DiffuseHighSDXLPipeline
 pipeline = DiffuseHighSDXLPipeline.from_pretrained(
@@ -32,7 +65,7 @@ pipeline = DiffuseHighSDXLPipeline.from_pretrained(
 ).to("cuda")
 
 negative_prompt = "blurry, ugly, duplicate, poorly drawn, deformed, mosaic"
-prompt = "a photo of an astronaut riding a horse on mars."
+prompt = "Cinematic photo of delicious chocolate icecream."
 
 image = model(
         prompt,
@@ -47,3 +80,7 @@ image = model(
 
 image.save("sample.png")
 ```
+
+result:
+
+<img src="figures/sample_icecream.png">
