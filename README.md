@@ -31,7 +31,7 @@ conda activate diffusehigh
 pip install torch==2.1.1 torchvision==0.16.1 torchaudio==2.1.1 xformers --index-url https://download.pytorch.org/whl/cu121
 ```
 
-Please install below pacakges in your environment:
+Please manually install below pacakges in your environment:
 
 - diffusers >= 0.24.0
 - accelerate
@@ -39,7 +39,7 @@ Please install below pacakges in your environment:
 - pywavelets
 - pytorch-wavelets
 
-or via following command:
+or automatically install via following command:
 ```
 pip install -r requirements.txt
 ```
