@@ -30,6 +30,7 @@ conda create -n diffusehigh python=3.9.0 -y
 conda activate diffusehigh
 pip install torch==2.1.1 torchvision==0.16.1 torchaudio==2.1.1 xformers --index-url https://download.pytorch.org/whl/cu121
 ```
+(It is cubersome to search the compatible 'xformers' with your current torch. You can simply add 'xformers' in your torch installation command like above.)
 
 Please manually install below pacakges in your environment:
 
