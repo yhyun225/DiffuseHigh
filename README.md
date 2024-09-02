@@ -45,8 +45,7 @@ or automatically install via following command:
 pip install -r requirements.txt
 ```
 
-## 🔥 Run DiffuseHigh!
-
+## 🔥 Run DiffuseHigh + SDXL!
 ### HyperParameters
 - `target_height` (type: `List[int]` or `int`, default: `[2048, 3072, 4096]`): The height of the image being generated. If list is given, the pipeline generates corresponding intermediate resolution images in a progressive manner.
 - `target_width` (type: `List[int]` or `int`, default: `[2048, 3072, 4096]`): The width of the image being generated. If list is given, the pipeline generates corresponding intermediate resolution images in a progressive manner.
