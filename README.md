@@ -21,7 +21,7 @@ Large-scale generative models, such as text-to-image diffusion models, have garn
 ## ⚙️ Dependency Setup
 Create the conda environment with below commands.
 Our code is implemented based on torch + diffusers.
-You should first check your cuda compiler version, and install the compatible version of pytorch.
+You should first check your cuda compiler version, and install the compatible torch.
 
 We ran our experiment with torch 2.1.1 + cuda 12.1.
 
@@ -32,7 +32,7 @@ pip install torch==2.1.1 torchvision==0.16.1 torchaudio==2.1.1 xformers --index-
 ```
 (It is cubersome to search the compatible 'xformers' with your current torch. You can simply add 'xformers' in your torch installation command like above.)
 
-Please manually install below pacakges in your environment:
+You can manually install below pacakges in your environment:
 
 - diffusers >= 0.24.0
 - accelerate
