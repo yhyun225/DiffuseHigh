@@ -93,10 +93,10 @@ def retrieve_timesteps(
 def gaussian_blur_image_sharpening(image, kernel_size=3, sigma=(0.1, 2.0), alpha=1):
     gaussian_blur = GaussianBlur(kernel_size=kernel_size, sigma=sigma)
     image_blurred = gaussian_blur(image)
-    image_sharpened = (alpha + 1) * image - alpha * image_blurred   
+    image_sharpened = (alpha + 1) * image - alpha * image_blurred
 
     return image_sharpened
-    
+
 
 class DiffuseHighSDXLPipelineOutput(BaseOutput):
     """
@@ -140,7 +140,7 @@ class DiffuseHighSDXLPipeline(StableDiffusionXLPipeline):
             force_zeros_for_empty_prompt=force_zeros_for_empty_prompt,
             add_watermarker=add_watermarker
         )
-    
+
     def _encode_vae_image(
         self,
         image: torch.Tensor,
@@ -150,16 +150,16 @@ class DiffuseHighSDXLPipeline(StableDiffusionXLPipeline):
             image = image * 2 - 1
 
         needs_upcasting = self.vae.dtype == torch.float16 and self.vae.config.force_upcast
-        
+
         if needs_upcasting:
             self.upcast_vae()
 
         image = image.to(self.device)
-        latents = self.vae.encode(image).latent_dist.sample() * self.vae.config.scaling_factor
+        latents = self.vae.encode(image).latent_dist.mode() * self.vae.config.scaling_factor
 
         if needs_upcasting:
             self.vae.to(dtype=torch.float16)
-            
+
         return latents.to(self.dtype)
 
     def _decode_vae_latent(
@@ -179,7 +179,7 @@ class DiffuseHighSDXLPipeline(StableDiffusionXLPipeline):
 
         if needs_upcasting:
             self.vae.to(dtype=torch.float16)
-            
+
         return image
 
     def edm_scheduler_step(
@@ -194,15 +194,15 @@ class DiffuseHighSDXLPipeline(StableDiffusionXLPipeline):
         LL_guidance: Optional[torch.FloatTensor] = None,
         generator: Optional[torch.Generator] = None,
         return_pred_original_sample: bool = False,
-    ):  
+    ):
         assert isinstance(self.scheduler, EulerDiscreteScheduler)
         config = self.scheduler.config
 
         if self.scheduler.step_index is None:
             self.scheduler._init_step_index(timestep)
-        
+
         step_index = self.scheduler.step_index
-        
+
         sigma = self.scheduler.sigmas[step_index]
 
         gamma = min(s_churn / (len(self.scheduler.sigmas) - 1), 2**0.5 - 1) if s_tmin <= sigma <= s_tmax else 0.0
@@ -237,12 +237,12 @@ class DiffuseHighSDXLPipeline(StableDiffusionXLPipeline):
             _, HH = self.DWT(pred_original_image)
             coeffs = (LL_guidance, HH)
             pred_original_image = self.iDWT(coeffs)
-            
+
             pred_original_sample = self._encode_vae_image(pred_original_image)
 
         # 3. Convert to an ODE derivative
         derivative = (sample - pred_original_sample) / sigma_hat
-        
+
         dt = self.scheduler.sigmas[self.scheduler.step_index + 1] - sigma_hat
 
         prev_sample = sample + derivative * dt
@@ -251,10 +251,10 @@ class DiffuseHighSDXLPipeline(StableDiffusionXLPipeline):
 
         if return_pred_original_sample:
             return (prev_sample, pred_original_sample)
-        
+
         return (prev_sample, )
-        
-    
+
+
     @torch.no_grad()
     def __call__(
         self,
@@ -442,8 +442,8 @@ class DiffuseHighSDXLPipeline(StableDiffusionXLPipeline):
             target_width ('List[int]' or int):
                 The width of the image being generated. If list is given, the pipeline generates corresponding intermediate
                 resolution images in a progressive manner.
-                
-            
+
+
 
         Examples:
 
@@ -687,27 +687,27 @@ class DiffuseHighSDXLPipeline(StableDiffusionXLPipeline):
             target_width = [target_width]
         if isinstance(target_height, int):
             target_height = [target_height]
-    
+
         assert len(target_width) == len(target_height)
 
         #12. Progressive DiffuseHigh Pipeline
         for h, w in zip(target_height, target_width):
             # interpolate the image to the desired resolution
             guidance_image = F.interpolate(image, (h, w), mode="bicubic", align_corners=False)
-            
+
             # apply sharpening operation to the image
             if enable_sharpening:
                 guidance_image = gaussian_blur_image_sharpening(
-                    guidance_image, 
+                    guidance_image,
                     kernel_size=sharpening_kernel_size,
                     sigma=sharpening_sigma,
                     alpha=sharpening_alpha,
                 )
-            
+
             # extract low-frequency component (structural guidance) from the guidance image
             if enable_dwt:
                 LL, _ = self.DWT(guidance_image)
-            
+
             # obtain latent of the interpolated image and noise it
             latents = self._encode_vae_image(guidance_image)
             noise = randn_tensor(latents.shape, generator, device=latents.device, dtype=latents.dtype)
@@ -745,7 +745,7 @@ class DiffuseHighSDXLPipeline(StableDiffusionXLPipeline):
                     **extra_step_kwargs,
                     LL_guidance=LL if (enable_dwt and i < dwt_steps) else None,
                 )[0]
-            
+
             image = self._decode_vae_latent(latents)
 
             if isinstance(self.scheduler, EulerDiscreteScheduler):
@@ -757,7 +757,7 @@ class DiffuseHighSDXLPipeline(StableDiffusionXLPipeline):
         if output_type != 'pt':
             image = self.image_processor.postprocess(image * 2 - 1, output_type=output_type)
             guidance_image = self.image_processor.postprocess(original_guidance_image * 2 -1 , output_type=output_type)
-        
+
         if not return_dict:
             return (image, guidance_image)
 
@@ -773,7 +773,7 @@ def set_seeds(seed):
     torch.backends.cudnn.benchmark = True
 
 # DEBUGGING
-if __name__ == "__main__": 
+if __name__ == "__main__":
     set_seeds(23)
 
     model = DiffuseHighSDXLPipeline.from_pretrained(
@@ -783,7 +783,7 @@ if __name__ == "__main__":
     prompt = "Cinematic photo of delicious chocolate icecream."
 
     negative_prompt = "blurry, ugly, duplicate, poorly drawn, deformed, mosaic"
-    
+
     image = model(
         prompt,
         negative_prompt=negative_prompt,
