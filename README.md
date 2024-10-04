@@ -74,7 +74,7 @@ pipeline = DiffuseHighSDXLPipeline.from_pretrained(
 negative_prompt = "blurry, ugly, duplicate, poorly drawn, deformed, mosaic"
 prompt = "A baby bunny sitting on a stack of pancakes."
 
-image = model(
+image = pipeline(
         prompt,
         negative_prompt=negative_prompt,
         target_height=[1536, 2048],
@@ -101,7 +101,7 @@ pipeline = DiffuseHighSDXLPipeline.from_pretrained(
 negative_prompt = "blurry, ugly, duplicate, poorly drawn, deformed, mosaic"
 prompt = "Cinematic photo of delicious chocolate icecream."
 
-image = model(
+image = pipeline(
         prompt,
         negative_prompt=negative_prompt,
         target_height=[2048, 3072, 4096],
