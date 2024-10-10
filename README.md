@@ -2,6 +2,7 @@
 
 [![Project Page](https://img.shields.io/badge/Project-Page-green.svg)](https://yhyun225.github.io/DiffuseHigh/)
 [![arXiv](https://img.shields.io/badge/arXiv-2311.16973-b31b1b.svg)](https://arxiv.org/abs/2406.18459)
+<a href='https://huggingface.co/spaces/ameerazam08/DiffuseHigh-SDXL'><img src='https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue'></a>
 
 Official github for "DiffuseHigh: Training-free Progressive High-Resolution Image Synthesis through Structure Guidance"
 
