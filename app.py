@@ -36,18 +36,11 @@ def create_demo():
             
             with gr.Column():
                 output_image = gr.Image(label="Generated Image")
-                output_seed = gr.Text(label="Used Seed")
-
-        do_img2img.change(
-            fn=lambda x: [gr.update(visible=x), gr.update(visible=x), gr.update(visible=x)],
-            inputs=[do_img2img],
-            outputs=[init_image, image2image_strength, resize_img]
-        )
 
         generate_button.click(
-            fn=generate_image,
-            inputs=[prompt, neg_prompt, num_steps,width, height, guidance, seed, do_img2img, init_image, image2image_strength, resize_img],
-            outputs=[output_image, output_seed]
+            fn=process_,
+            inputs=[prompt],
+            outputs=[output_image]
         )
         
         examples = [
