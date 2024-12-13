@@ -10,6 +10,7 @@ Official github for "DiffuseHigh: Training-free Progressive High-Resolution Imag
 ## 🚨 News
 - **2024.08.28**: *DiffuseHigh* code release!
 - **2024.10.22**: Thank [blepping](https://github.com/blepping) for implementing ComfyUI version of *DiffuseHigh* with further improvements. Follow the instructions on [here](https://github.com/blepping/comfyui_jankdiffusehigh) to give it a try.
+- **2024.12.09**: *DiffuseHigh* accepted to [AAAI 2025](https://aaai.org/conference/aaai/aaai-25/)!
 
 ## 🗓️ To Do List
 - [x] Code release for DiffuseHigh
